@@ -5,9 +5,15 @@ require('dotenv').config()
 
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
-const items = require('../services/services')
-const account = require('../services/receive_rules')
-const formaDePagamento = require('../services/payment_terms')
+
+const CentroItems = require('../services/centro/services')
+
+const PtbAccount = require('../services/ptb/PTBreceive_rules')
+const CentroAccount = require('../services/centro/receive_rules')
+
+const CentroFormaDePagamento = require('../services/centro/payment_terms')
+const PTBformaDePagamento = require('../services/ptb/PTBpayment_terms')
+const PTBservices = require('../services/ptb/PTBservices')
 const currentDate = new Date();
 
 
@@ -117,8 +123,8 @@ class RegisterController {
         }
 
         async function db() {
-            const log = await prisma.conec.findMany({ where: { id: 1 } })
-            senderCustomer(log[0].access_token)
+            const log = await prisma.conec.findMany({ where: { id: unidade === "Centro" ? 1 : 2 } })
+            senderCustomer(log[0]?.access_token)
         }
         db()
 
@@ -127,21 +133,24 @@ class RegisterController {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
             }
-            if (etapa === 'Dados Cadastrais para Matrícula' && unidade === 'Centro') {
+
+            if (etapa === 'Dados Cadastrais para Matrícula') {
                 await axios.post('https://api.contaazul.com/v1/customers',
-                    customerBody, { headers })
-                    .then(res => {
+                    customerBody, { headers }).then(res => {
+                        console.log(res)
                         senderSale(res.data)
                     })
                     .catch(async err => {
                         if (err.response.data.message === 'CPF/CPNJ já utilizado por outro cliente.') {
                             await axios.get(`https://api.contaazul.com/v1/customers?document=${cpf_cnpj}`,
-                                { headers }).then(data => senderSale(data.data[0]))
+                                { headers }).then(data => {
+                                    senderSale(data.data[0])
+                                    console.log(data)
+                                })
                         }
                     }
                     )
             }
-            return
 
         }
 
@@ -159,9 +168,11 @@ class RegisterController {
             parcelas.push(parcela); //essa função faz um loop pra criar as parcelas de acordo com o n_parcelas
         }
 
-        const method = formaDePagamento[parcela_forma_de_pagamento]; // esse cara define o metodo de pagamento padronizados pelo site de acordo com o banco de dados
-        const id_item = items[tipo_item]
-        const financial = account[method]
+        const centroMethod = CentroFormaDePagamento[parcela_forma_de_pagamento];
+        const ptbMethod = PTBformaDePagamento[parcela_forma_de_pagamento]// esse cara define o metodo de pagamento padronizados pelo site de acordo com o banco de dados
+
+        const id_item = unidade === "Centro" ? CentroItems[tipo_item] : PTBservices[tipo_item]
+        const financial = unidade === "Centro" ? CentroAccount[centroMethod] : PtbAccount[ptbMethod]
 
         const salesNotesString = {
             "Valor da Primeira(s) Parcela(s)": valor_da_Primeira_Parcela,
@@ -188,9 +199,9 @@ class RegisterController {
         const saleNotes = JSON.stringify(salesNotesString)
 
         async function senderSale(customer) {
-            const token = await prisma.conec.findMany({ where: { id: 1 } })
+            const token = await prisma.conec.findMany({ where: { id: unidade === "Centro" ? 1 : 2 } })
             const headers = {
-                "Authorization": `Bearer ${token[0].access_token}`,
+                "Authorization": `Bearer ${token[0]?.access_token}`,
                 "Content-Type": "application/json"
             }
 
@@ -212,7 +223,7 @@ class RegisterController {
                 },
                 "payment": {
                     "type": n_parcelas <= 1 ? "CASH" : "TIMES",
-                    "method": method,
+                    "method": centroMethod,
                     "installments":
                         parcelas
                     ,
