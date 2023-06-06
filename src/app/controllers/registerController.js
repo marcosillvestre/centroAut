@@ -123,7 +123,7 @@ class RegisterController {
         }
 
         async function db() {
-            const log = await prisma.conec.findMany({ where: { id: unidade === "Centro" ? 1 : 2 } })
+            const log = await prisma.conec.findMany({ where: { id: unidade.includes("PTB") || unidade.includes("Golfinho Azul") ? 2 : 1 } })
             senderCustomer(log[0]?.access_token)
         }
         db()
@@ -165,14 +165,15 @@ class RegisterController {
                 "note": "NOTE",
                 "hasBillet": true
             };
-            parcelas.push(parcela); //essa função faz um loop pra criar as parcelas de acordo com o n_parcelas
+            parcelas.push(parcela);
         }
 
         const centroMethod = CentroFormaDePagamento[parcela_forma_de_pagamento];
-        const ptbMethod = PTBformaDePagamento[parcela_forma_de_pagamento]// esse cara define o metodo de pagamento padronizados pelo site de acordo com o banco de dados
+        const ptbMethod = PTBformaDePagamento[parcela_forma_de_pagamento]
 
-        const id_item = unidade === "Centro" ? CentroItems[tipo_item] : PTBservices[tipo_item]
-        const financial = unidade === "Centro" ? CentroAccount[centroMethod] : PtbAccount[ptbMethod]
+
+        const id_item = unidade.includes("PTB") || unidade.includes("Golfinho Azul") ? PTBservices[tipo_item] : CentroItems[tipo_item]
+        const financial = unidade.includes("PTB") || unidade.includes("Golfinho Azul") ? PtbAccount[ptbMethod] : CentroAccount[centroMethod]
 
         const salesNotesString = {
             "Valor da Primeira(s) Parcela(s)": valor_da_Primeira_Parcela,
@@ -199,7 +200,7 @@ class RegisterController {
         const saleNotes = JSON.stringify(salesNotesString)
 
         async function senderSale(customer) {
-            const token = await prisma.conec.findMany({ where: { id: unidade === "Centro" ? 1 : 2 } })
+            const token = await prisma.conec.findMany({ where: { id: unidade.includes("PTB") || unidade.includes("Golfinho Azul") ? 2 : 1 } })
             const headers = {
                 "Authorization": `Bearer ${token[0]?.access_token}`,
                 "Content-Type": "application/json"

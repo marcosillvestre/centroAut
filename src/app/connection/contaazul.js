@@ -20,12 +20,6 @@ var job = new CronJob(
 // 1 = centro 
 // 2=ptb
 
-async function ll() {
-    await prisma.conec.findMany().then(res => console.log(res))
-}
-// ll()
-//👆👆 this dude makes this 👇👇 function runs every 50min
-
 
 
 async function refreshCentro() {
