@@ -12,7 +12,6 @@ const receive_rules = {
     "WITHOUT_PAYMENT": "",
     "BANKING_TRANSFER": "feb2af39-163e-432c-ae7c-b587b2d042a7",
     "OTHER": ""
-
 }
 
 module.exports = receive_rules

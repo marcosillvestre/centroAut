@@ -145,7 +145,6 @@ class RegisterController {
                             await axios.get(`https://api.contaazul.com/v1/customers?document=${cpf_cnpj}`,
                                 { headers }).then(data => {
                                     senderSale(data.data[0])
-                                    console.log(data)
                                 })
                         }
                     }
@@ -224,7 +223,7 @@ class RegisterController {
                 },
                 "payment": {
                     "type": n_parcelas <= 1 ? "CASH" : "TIMES",
-                    "method": centroMethod,
+                    "method": unidade.includes("PTB") || unidade.includes("Golfinho Azul") ? ptbMethod : centroMethod,
                     "installments":
                         parcelas
                     ,

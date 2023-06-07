@@ -10,8 +10,8 @@ var CronJob = require('cron').CronJob;
 var job = new CronJob(
     '0 */50 * * * *',
     function () {
-        refreshCentro()
-        refreshPtb()
+        // refreshCentro()
+        // refreshPtb()
     },
     null,
     true,
@@ -19,9 +19,11 @@ var job = new CronJob(
 );
 // 1 = centro 
 // 2=ptb
+const kk = async () => {
 
-
-
+    await prisma.conec.findMany().then(res => console.log(res))
+}
+kk()
 async function refreshCentro() {
     const headers = {
         "Authorization": `Basic ${encoded}`,
