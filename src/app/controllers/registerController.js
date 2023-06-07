@@ -153,11 +153,13 @@ class RegisterController {
         }
 
         const parcelas = [];
+        const month_value = (n_parcelas / valor_total).toFixed(2)
+
         for (let i = 0; i < n_parcelas; i++) {
             const dueDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 11);
             const parcela = {
                 "number": i + 1,
-                "value": valor_da_parcela_após_pp,
+                "value": parseFloat(month_value),
                 "due_date": dueDate.toISOString(),
                 "status": 'PENDING',
                 "note": "NOTE",

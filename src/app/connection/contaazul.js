@@ -20,6 +20,7 @@ var job = new CronJob(
 // 1 = centro 
 // 2=ptb
 
+
 async function refreshCentro() {
     const headers = {
         "Authorization": `Basic ${encoded}`,
@@ -66,7 +67,7 @@ async function refreshPtb() {
     try {
         await axios.post("https://api.contaazul.com/oauth2/token",
             body, { headers }).then(async data => {
-                // console.log(data.data)
+                console.log(data.data)
                 await prisma.conec.update({
                     where: { id: 2 },
                     data: {
