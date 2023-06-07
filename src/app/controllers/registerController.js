@@ -219,7 +219,7 @@ class RegisterController {
                 ],
                 "discount": {
                     "measure_unit": "VALUE",
-                    "rate": desconto_total_Pontualidade
+                    "rate": 0
                 },
                 "payment": {
                     "type": n_parcelas <= 1 ? "CASH" : "TIMES",
