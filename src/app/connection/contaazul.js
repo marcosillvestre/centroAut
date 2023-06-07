@@ -20,7 +20,6 @@ var job = new CronJob(
 // 1 = centro 
 // 2=ptb
 
-
 async function refreshCentro() {
     const headers = {
         "Authorization": `Basic ${encoded}`,

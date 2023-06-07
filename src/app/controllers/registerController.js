@@ -153,7 +153,7 @@ class RegisterController {
         }
 
         const parcelas = [];
-        const month_value = (n_parcelas / valor_total).toFixed(2)
+        const month_value = (valor_total / n_parcelas).toFixed(2)
 
         for (let i = 0; i < n_parcelas; i++) {
             const dueDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 11);
