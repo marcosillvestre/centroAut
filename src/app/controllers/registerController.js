@@ -137,7 +137,6 @@ class RegisterController {
             if (etapa === 'Dados Cadastrais para Matrícula') {
                 await axios.post('https://api.contaazul.com/v1/customers',
                     customerBody, { headers }).then(res => {
-                        console.log(res)
                         senderSale(res.data)
                     })
                     .catch(async err => {

@@ -39,10 +39,8 @@ class AccessController {
     }
 
     async index(req, res) {
-        const db = await prisma.conec.findMany({
-            where: { id: 1 }
-        })
-        return res.status(201).json(db[0])
+        const db = await prisma.conec.findMany()
+        return res.status(201).json(db)
     }
 
 
