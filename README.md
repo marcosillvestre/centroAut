@@ -6,8 +6,8 @@ This it´s a low code project that uses axios, yup, prisma and cron-time librari
 
 ## Step 1 --> clone this repository 
 ## Step 2 --> run npm install to install all dependencies 
-## Step 3 --> go get your credentials at conta azul 
-## Step 4 --> set you credentials in a .env file 
+## Step 3 --> go get your credentials on conta azul 
+## Step 4 --> set you credentials in the .env file 
 
 ## References
 
