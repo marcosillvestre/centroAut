@@ -1,5 +1,5 @@
 const PTBformaDePagamento = {
-    "Boleto Bancario": "BANKING_BILLET",
+    "Boleto Bancário": "BANKING_BILLET",
     "Cashback": "CASHBACK",
     "Cheque": "CHECK",
     "Cartão de Débito": "DEBIT_CARD",

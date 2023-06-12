@@ -98,13 +98,13 @@ class RegisterController {
         const customerBody = {
             "name": name,
             "email": email,
-            "business_phone": telefone, //
+            "business_phone": telefone,
             "mobile_phone": celular,
             "person_type": cpf_cnpj.lenght <= 11 ? "LEGAL" : "NATURAL", //
             "document": cpf_cnpj,
-            "identity_document": rg, //
+            "identity_document": rg,
             "date_of_birth": new Date(data_nascimento.split("/").reverse().join("-")),
-            "notes": notes, //
+            "notes": notes,
             "contacts": [
                 {
                     "name": name,
@@ -134,7 +134,7 @@ class RegisterController {
                 "Content-Type": "application/json"
             }
 
-            if (etapa === 'Dados Cadastrais para Matrícula') {
+            if (etapa === 'Plano Financeiro') {
                 await axios.post('https://api.contaazul.com/v1/customers',
                     customerBody, { headers }).then(res => {
                         senderSale(res.data)
@@ -162,8 +162,6 @@ class RegisterController {
                 "value": parseFloat(month_value),
                 "due_date": dueDate.toISOString(),
                 "status": 'PENDING',
-                "note": "NOTE",
-                "hasBillet": true
             };
             parcelas.push(parcela);
         }
@@ -230,12 +228,13 @@ class RegisterController {
                     ,
                     "financial_account_id": financial
                 },
-                "notes": saleNotes,   //
-                "category_id": "" //
+                "notes": saleNotes,
+                "category_id": ""
             }
 
             await axios.post('https://api.contaazul.com/v1/sales', saleBody, { headers })
                 .then(data => {
+                    console.log(data.data)
                     data ? console.log("A venda foi lançada") : console.log("A venda nao foi lançada")
                 }).catch(error => {
                     if (error) {

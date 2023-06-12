@@ -12,7 +12,6 @@ const PTBreceive_rules = {
     "WITHOUT_PAYMENT": "",
     "BANKING_TRANSFER": "f647fea2-544d-4639-a270-a6eeb3135d53",
     "OTHER": "",
-
 }
 
 module.exports = PTBreceive_rules
