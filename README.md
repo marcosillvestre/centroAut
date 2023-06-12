@@ -2,7 +2,7 @@
 
 This it´s a low code project that uses axios, yup, prisma and cron-time libraries to make a connection with Conta Azul. Here im passing throug the oauth2 authentication using prisma.
 
-# How's to use ?
+# How to use ?
 
 ## Step 1 --> clone this repository 
 ## Step 2 --> run npm install to install all dependencies 
