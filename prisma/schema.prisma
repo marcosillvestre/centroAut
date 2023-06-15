@@ -10,9 +10,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
 model conec {
   id              Int         @id @default(autoincrement())
   access_token    String 
   refresh_token   String
-  
+}
+
+model index {
+  id              Int         @id @default(autoincrement())
+  access_token    String 
+  refresh_token   String
 }
