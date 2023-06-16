@@ -13,18 +13,14 @@ var job = new CronJob(
 
 
     function () {
-        // refreshCentro()
-        // refreshPtb()
+        refreshCentro()
+        refreshPtb()
     },
     null,
     true,
     'America/Los_Angeles'
 );
 
-// const kk = async () => {
-//     await prisma.conec.findMany().then(data => console.log(data))
-// }
-// kk()
 //👆👆 this dude makes this 👇👇 function runs every 50min
 const kk = async () => {
     await prisma.conec.findMany().then(res => console.log(res))
