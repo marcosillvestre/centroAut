@@ -10,29 +10,28 @@ const prisma = new PrismaClient()
 var CronJob = require('cron').CronJob;
 var job = new CronJob(
     '0 */50 * * * *',
+
+
     function () {
-        refreshCentro()
-        refreshPtb()
+        // refreshCentro()
+        // refreshPtb()
     },
     null,
     true,
     'America/Los_Angeles'
 );
-// 1 = centro 
-// 2=ptb
 
-<<<<<<< HEAD
+// const kk = async () => {
+//     await prisma.conec.findMany().then(data => console.log(data))
+// }
+// kk()
+//👆👆 this dude makes this 👇👇 function runs every 50min
+const kk = async () => {
+    await prisma.conec.findMany().then(res => console.log(res))
+}
+// kk()
 
 async function refreshCentro() {
-=======
-const kk = async () => {
-    await prisma.conec.findMany().then(data => console.log(data))
-}
-kk()
-//👆👆 this dude makes this 👇👇 function runs every 50min
-
-async function refresh() {
->>>>>>> master
     const headers = {
         "Authorization": `Basic ${encoded}`,
         "Content-Type": "application/json"
@@ -96,5 +95,4 @@ async function refreshPtb() {
     }
 }
 //this 👆👆 part saves on a database the access and refresh_token
-
 

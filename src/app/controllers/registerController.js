@@ -1,6 +1,7 @@
 const yup = require('yup')
 const axios = require('axios')
 require('dotenv').config()
+const moment = require('moment')
 
 
 const { PrismaClient } = require('@prisma/client')
@@ -48,7 +49,7 @@ class RegisterController {
             data_de_vencimento_da_primeira: yup.string().required(),
             data_de_vencimento_da_ultima: yup.string().required(),
             desconto_total_Pontualidade: yup.number().required(),
-            material_didático: yup.string().required(),
+            material_didático: yup.array().required(),
             md_valor: yup.number().required(),
             md_data_de_pagamento: yup.string().required(),
             md_forma_de_pagamento: yup.string().required(),
@@ -122,6 +123,7 @@ class RegisterController {
             }
         }
 
+
         async function db() {
             const log = await prisma.conec.findMany({ where: { id: unidade.includes("PTB") || unidade.includes("Golfinho Azul") ? 2 : 1 } })
             senderCustomer(log[0]?.access_token)
@@ -146,8 +148,7 @@ class RegisterController {
                                     senderSale(data.data[0])
                                 })
                         }
-                    }
-                    )
+                    })
             }
 
         }
@@ -182,10 +183,12 @@ class RegisterController {
             "Data de vencimento da última": data_de_vencimento_da_ultima,
             "N° de Parcelas": n_parcelas,
             "Desconto total": desconto_total_Pontualidade,
+
             "MD": material_didático,
             "MD Valor": md_valor,
             "MD vencimento": md_data_de_pagamento,
             "MD forma pg": md_forma_de_pagamento,
+
             "TM Valor": tm_valor,
             "TM forma de pg": tm_forma_de_pagamento,
             "TM Venc": tm_data_de_pagamento,
@@ -194,7 +197,6 @@ class RegisterController {
             "Descrição": descricao,
             "Curso": curso
         }
-
         const saleNotes = JSON.stringify(salesNotesString)
 
         async function senderSale(customer) {
@@ -204,7 +206,7 @@ class RegisterController {
                 "Content-Type": "application/json"
             }
 
-            const saleBody = {
+            const courseSale = {
                 "emission": customer?.created_at,
                 "status": "PENDING",
                 "customer_id": customer?.id,
@@ -222,7 +224,8 @@ class RegisterController {
                 },
                 "payment": {
                     "type": n_parcelas <= 1 ? "CASH" : "TIMES",
-                    "method": unidade.includes("PTB") || unidade.includes("Golfinho Azul") ? ptbMethod : centroMethod,
+                    "method": unidade.includes("PTB") || unidade.includes("Golfinho Azul") ?
+                        ptbMethod : centroMethod,
                     "installments":
                         parcelas
                     ,
@@ -231,20 +234,95 @@ class RegisterController {
                 "notes": saleNotes,
                 "category_id": ""
             }
-
-            await axios.post('https://api.contaazul.com/v1/sales', saleBody, { headers })
+            await axios.post('https://api.contaazul.com/v1/sales', courseSale, { headers })
                 .then(data => {
-                    console.log(data.data)
                     data ? console.log("A venda foi lançada") : console.log("A venda nao foi lançada")
                 }).catch(error => {
                     if (error) {
-                        return res.status(400).json({ message: "Erro na venda" })
+                        console.log("deu ruim")
                     }
-
                 })
 
+            senderTeachingMaterial(customer, token[0]?.access_token)
         }
 
+
+
+
+
+
+
+
+
+
+
+        const mdFromCentro = require('../services/centro/materialDidatico')
+        const mdFromPtb = require('../services/ptb/materialDidaticoPtb')
+        const products = []
+
+
+        const centroMethodMaterial = CentroFormaDePagamento[md_forma_de_pagamento];
+        const ptbMethodMaterial = PTBformaDePagamento[md_forma_de_pagamento]
+        const priceMaterialCentro = require('../services/centro/teachingMaterialPrice')
+        const priceMaterialPtb = require('../services/ptb/teachingMaterialPricePTB')
+
+        material_didático.map(data => {
+            const pd = {
+                "description": data.value,
+                "quantity": 1,
+                "value": unidade.includes("PTB") || unidade.includes("Golfinho Azul") ?
+                    priceMaterialPtb[mdFromPtb[data.value]] : priceMaterialCentro[mdFromCentro[data.value]],
+                "product_id": unidade.includes("PTB") || unidade.includes("Golfinho Azul") ?
+                    mdFromPtb[data.value] : mdFromCentro[data.value],
+            }
+            products.push(pd)
+        })
+
+        const financialMaterial = unidade.includes("PTB") || unidade.includes("Golfinho Azul") ?
+            PtbAccount[ptbMethodMaterial] : CentroAccount[centroMethodMaterial]
+
+
+        const formattedDate = moment(md_data_de_pagamento, "DD/MM/YYYY").toDate();
+
+        async function senderTeachingMaterial(customer, token) {
+            const header = {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+
+            const teachingmaterial = {
+                "emission": customer?.created_at,
+                "status": "PENDING",
+                "customer_id": customer?.id,
+                "products": products,
+                "payment": {
+                    "type": "TIMES",
+                    "method": unidade.includes("PTB") || unidade.includes("Golfinho Azul") ?
+                        ptbMethodMaterial : centroMethodMaterial,
+                    "installments":
+                        [{
+                            "number": 1,
+                            "value": md_valor,
+                            "due_date": formattedDate,
+                            "status": "PENDING",
+                        }]
+                    ,
+                    "financial_account_id": financialMaterial
+                },
+                "notes": saleNotes,
+                "category_id": ""
+            }
+            await axios.post('https://api.contaazul.com/v1/sales', teachingmaterial,
+                { headers: header })
+                .then(data => {
+                    data ? console.log("O material foi lançado") :
+                        console.log("O material nao foi lançado")
+                }).catch(error => {
+                    if (error) {
+                        console.log(error)
+                    }
+                })
+        }
         return res.status(201).json({ message: "Enviado com sucesso" })
 
     }
