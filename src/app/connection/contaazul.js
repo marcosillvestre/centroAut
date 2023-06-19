@@ -92,3 +92,5 @@ async function refreshPtb() {
 }
 //this 👆👆 part saves on a database the access and refresh_token
 
+ //segunda temos que testar essa questao das novas funcionalidades juntamente com o make ( array sendo enviado no lugar do material didatico )
+// esquematizei assim [{ "id": 000, "value": "Touchstone 1 - SB - 5th Ed" }] por ex
