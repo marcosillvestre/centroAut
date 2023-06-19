@@ -21,18 +21,8 @@ var job = new CronJob(
 // 1 = centro 
 // 2=ptb
 
-<<<<<<< HEAD
-
 async function refreshCentro() {
-=======
-const kk = async () => {
-    await prisma.conec.findMany().then(data => console.log(data))
-}
-kk()
-//👆👆 this dude makes this 👇👇 function runs every 50min
 
-async function refresh() {
->>>>>>> master
     const headers = {
         "Authorization": `Basic ${encoded}`,
         "Content-Type": "application/json"
