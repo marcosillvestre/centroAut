@@ -11,20 +11,18 @@ var CronJob = require('cron').CronJob;
 var job = new CronJob(
     '0 */50 * * * *',
     function () {
-        refresh()
+        refreshCentro()
+        refreshPtb()
     },
     null,
     true,
     'America/Los_Angeles'
 );
+// 1 = centro 
+// 2=ptb
 
-const kk = async () => {
-    await prisma.conec.findMany().then(data => console.log(data))
-}
-kk()
-//👆👆 this dude makes this 👇👇 function runs every 50min
+async function refreshCentro() {
 
-async function refresh() {
     const headers = {
         "Authorization": `Basic ${encoded}`,
         "Content-Type": "application/json"
@@ -56,6 +54,37 @@ async function refresh() {
     }
 }
 
+async function refreshPtb() {
+    const headers = {
+        "Authorization": `Basic ${encoded}`,
+        "Content-Type": "application/json"
+    }
+    const db = await prisma.conec.findMany({ where: { id: 2 } })
+    const body = {
+        "grant_type": "refresh_token",
+        "refresh_token": `${db[0]?.refresh_token}`
+    }
+
+    try {
+        await axios.post("https://api.contaazul.com/oauth2/token",
+            body, { headers }).then(async data => {
+                console.log(data.data)
+                await prisma.conec.update({
+                    where: { id: 2 },
+                    data: {
+                        access_token: data?.data.access_token,
+                        refresh_token: data?.data.refresh_token
+                    }
+                }
+                )
+            })
+
+    } catch (error) {
+        if (error) {
+            console.log(error)
+        }
+    }
+}
 //this 👆👆 part saves on a database the access and refresh_token
 
 

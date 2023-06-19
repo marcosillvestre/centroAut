@@ -1,0 +1,272 @@
+[33mcommit 3ddb9ce5e90d466e40e3f1083a833040e525f018[m[33m ([m[1;36mHEAD -> [m[1;32mdevelop[m[33m)[m
+Merge: 8918dc1 74af662
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Thu Jun 15 12:24:54 2023 -0300
+
+    Merge branch 'master' into develop
+
+[33mcommit 8918dc14613de46577f3e65fd935d87e04abb7a2[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Thu Jun 15 11:28:53 2023 -0300
+
+    code beauty
+
+[33mcommit c77d2c2c3ea1b8a0f9d001891e88c782e1568f6c[m[33m ([m[1;31morigin/develop[m[33m)[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Mon Jun 12 11:17:15 2023 -0300
+
+    feat: banking bills and notes
+
+[33mcommit 72ed828768fcc5db55dceef190fa31bd4fd1e430[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed Jun 7 13:44:49 2023 -0300
+
+    measure total value monthly
+
+[33mcommit 69accad587dcbff2d50608ccf13421ff79607450[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed Jun 7 13:24:05 2023 -0300
+
+    measure total value
+
+[33mcommit 7e0b023a26b0767a6e7365b5cbfa9dded9cee18e[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed Jun 7 13:04:16 2023 -0300
+
+    fix: routes and discount rules
+
+[33mcommit d5a8369765e2aaf4172ef6a7c976a573bc908db0[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed Jun 7 12:26:28 2023 -0300
+
+    discount measure rules
+
+[33mcommit f2d2cffee8582e207f54e4d69719c48d1f09bee0[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed Jun 7 11:43:32 2023 -0300
+
+    payment rules
+
+[33mcommit b23d415afa2ac2782430455f3d0903df95436cec[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed Jun 7 11:36:37 2023 -0300
+
+    services rules
+
+[33mcommit 8bfc067d88532e4026adfff7caca05fc07854fdc[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed Jun 7 11:25:32 2023 -0300
+
+    receive rules
+
+[33mcommit e7c0f14b621d18c69d46658290b7f1d67cba15b9[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Tue Jun 6 17:03:02 2023 -0300
+
+    separating co's
+
+[33mcommit ca45c46f09262d3da1da33348a71b081d4c5cea4[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Mon Jun 5 18:06:34 2023 -0300
+
+    ft: Both companies in one code
+
+[33mcommit 74af6622bf8771cf6ccb0ab4c4a099368dc387fa[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 31 15:34:04 2023 -0300
+
+    cert files sync prisma
+
+[33mcommit cac7784dd11cec1fde2158206d81e1bdfcb05991[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 31 15:30:37 2023 -0300
+
+    cert files sync prisma
+
+[33mcommit 284a292ce86bec99fef75d17a4110c74994e947e[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 31 15:28:48 2023 -0300
+
+    cert files sync prisma
+
+[33mcommit 0ec6c5062a1c0afd4b82c9cce7e3668df0959fa3[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 31 15:25:14 2023 -0300
+
+    cert files sync
+
+[33mcommit 80684030f32d104d1b9e54c81ee8a66ccb739978[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 31 12:21:43 2023 -0300
+
+    database reset and rereboot
+
+[33mcommit 6dbd92638e7caab72f704f6c07fa99c7c60900f1[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 31 12:08:19 2023 -0300
+
+    database reset and new reboot
+
+[33mcommit 6e8c1f61da9851e9d36ab4739ecb9f02084d03e5[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 31 11:54:31 2023 -0300
+
+    database reset and reboot
+
+[33mcommit d2293ac3abd2267ae0d0b598d317cd4ae63c623a[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Fri May 26 16:43:41 2023 -0300
+
+    taking out clg's
+
+[33mcommit 5dca6f932de280cfd3d84b51c17a76efc1c21910[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Fri May 26 12:32:27 2023 -0300
+
+    sales fixes
+
+[33mcommit dfb52d58acf7549f70e283fa60405196715e475a[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Fri May 26 12:04:22 2023 -0300
+
+    push up given
+
+[33mcommit 53d1d2acee99d5f85ef93a6e31c8d5de05e33e79[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Fri May 26 11:56:19 2023 -0300
+
+    db settings migrations
+
+[33mcommit fa95c4df7bad8b4c700d76ca3ebf4f98884f101a[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Fri May 26 11:41:13 2023 -0300
+
+    db settings
+
+[33mcommit 1dfa1589170e0922f7855a2f13c7cb4f0e07ec7a[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Fri May 26 11:24:00 2023 -0300
+
+    deploy node settings
+
+[33mcommit 7145f9a30b5b421e428d8698daa18cf9f3577189[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Fri May 26 08:46:51 2023 -0300
+
+    deploy sett
+
+[33mcommit 8fe8f5706c61d516875d8647c644f4d3c58e978d[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Thu May 25 15:48:55 2023 -0300
+
+    stages results cli
+
+[33mcommit ec6933860a5f78c21685b81a4bf6afd4217fa066[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Thu May 25 15:06:22 2023 -0300
+
+    stages tests
+
+[33mcommit e6a9f36b54fd2019b68ddc6981364258ea4f613f[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Thu May 25 11:40:23 2023 -0300
+
+    serialize json at sales
+
+[33mcommit d763e49248f9820fe72458124e271b05f225069c[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Thu May 25 10:55:37 2023 -0300
+
+    error handling data
+
+[33mcommit 787480aef6525502f527caca20206a90a9714f9e[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Thu May 25 10:32:12 2023 -0300
+
+    error handling
+
+[33mcommit 81ebd5d32cc2ca1b00995c081f0b976670cc0ea1[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Thu May 25 10:23:52 2023 -0300
+
+    array list
+
+[33mcommit 42884c3864734aa343d980c909ed7f8a4088774d[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Thu May 25 10:19:53 2023 -0300
+
+    separating ptb/centro
+
+[33mcommit e9718f93b50bdb48b4ab6e0f45501b0c62ec1cd8[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Thu May 25 09:57:45 2023 -0300
+
+    parse error at sales
+
+[33mcommit 86f33ebbfd7da401279ce66e3a9fc3e3938e196a[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 24 17:34:57 2023 -0300
+
+    serialize people duplicated success
+
+[33mcommit 93142c5e04ec3e60f65f9abdec8ece394e55bc87[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 24 17:16:29 2023 -0300
+
+    serialize people duplicated
+
+[33mcommit 195344f34e80916b3fea4009feb159032a842233[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 24 16:57:57 2023 -0300
+
+    cadastrosController duplicate people feat
+
+[33mcommit edf885e1164cdc2516c2bf4b3e18b2b0da0ec08b[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 24 15:03:55 2023 -0300
+
+    cadastrosController error fixes
+
+[33mcommit e6561e71e0d1d4b44db87656c08baf79c357f33b[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 24 14:45:54 2023 -0300
+
+    index routes fixes
+
+[33mcommit c9ec95a57a034ffe778137017cbcd28c41ecb4af[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 24 14:43:53 2023 -0300
+
+    index routes fix
+
+[33mcommit 6a4a58023d48e7c910fa759306e59014f8b09f01[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 24 14:40:26 2023 -0300
+
+    fixing routes
+
+[33mcommit b467e811dc1b82d160ca34b1b929b5ca8045c79c[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 24 12:15:58 2023 -0300
+
+    fix redeploy
+
+[33mcommit a40ac01acf1c72a1f67b9551b1b32d792d12462a[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 24 10:56:55 2023 -0300
+
+    teste redeploy
+
+[33mcommit 7ea690e2b4f2fa6101f2164a7ca3888376043ad8[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 24 10:55:30 2023 -0300
+
+    teste deploy
+
+[33mcommit a5defab4f96448785dc6ce258d7221f2716d8aad[m
+Author: marcos vinicius <marcos.vinicius7170@gmail.com>
+Date:   Wed May 24 10:53:17 2023 -0300
+
+    teste deploy
+
+[33mcommit 

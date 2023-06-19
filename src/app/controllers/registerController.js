@@ -5,9 +5,15 @@ require('dotenv').config()
 
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
-const items = require('../services/services')
-const account = require('../services/receive_rules')
-const formaDePagamento = require('../services/payment_terms')
+
+const CentroItems = require('../services/centro/services')
+
+const PtbAccount = require('../services/ptb/PTBreceive_rules')
+const CentroAccount = require('../services/centro/receive_rules')
+
+const CentroFormaDePagamento = require('../services/centro/payment_terms')
+const PTBformaDePagamento = require('../services/ptb/PTBpayment_terms')
+const PTBservices = require('../services/ptb/PTBservices')
 const currentDate = new Date();
 
 
@@ -92,13 +98,13 @@ class RegisterController {
         const customerBody = {
             "name": name,
             "email": email,
-            "business_phone": telefone, //
+            "business_phone": telefone,
             "mobile_phone": celular,
             "person_type": cpf_cnpj.lenght <= 11 ? "LEGAL" : "NATURAL", //
             "document": cpf_cnpj,
-            "identity_document": rg, //
+            "identity_document": rg,
             "date_of_birth": new Date(data_nascimento.split("/").reverse().join("-")),
-            "notes": notes, //
+            "notes": notes,
             "contacts": [
                 {
                     "name": name,
@@ -117,8 +123,8 @@ class RegisterController {
         }
 
         async function db() {
-            const log = await prisma.conec.findMany({ where: { id: 1 } })
-            senderCustomer(log[0].access_token)
+            const log = await prisma.conec.findMany({ where: { id: unidade.includes("PTB") || unidade.includes("Golfinho Azul") ? 2 : 1 } })
+            senderCustomer(log[0]?.access_token)
         }
         db()
 
@@ -127,41 +133,45 @@ class RegisterController {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
             }
-            if (etapa === 'Dados Cadastrais para Matrícula' && unidade === 'Centro') {
+
+            if (etapa === 'Plano Financeiro') {
                 await axios.post('https://api.contaazul.com/v1/customers',
-                    customerBody, { headers })
-                    .then(res => {
+                    customerBody, { headers }).then(res => {
                         senderSale(res.data)
                     })
                     .catch(async err => {
                         if (err.response.data.message === 'CPF/CPNJ já utilizado por outro cliente.') {
                             await axios.get(`https://api.contaazul.com/v1/customers?document=${cpf_cnpj}`,
-                                { headers }).then(data => senderSale(data.data[0]))
+                                { headers }).then(data => {
+                                    senderSale(data.data[0])
+                                })
                         }
                     }
                     )
             }
-            return
 
         }
 
         const parcelas = [];
+        const month_value = (valor_total / n_parcelas).toFixed(2)
+
         for (let i = 0; i < n_parcelas; i++) {
             const dueDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + i, 11);
             const parcela = {
                 "number": i + 1,
-                "value": valor_da_parcela_após_pp,
+                "value": parseFloat(month_value),
                 "due_date": dueDate.toISOString(),
                 "status": 'PENDING',
-                "note": "NOTE",
-                "hasBillet": true
             };
-            parcelas.push(parcela); //essa função faz um loop pra criar as parcelas de acordo com o n_parcelas
+            parcelas.push(parcela);
         }
 
-        const method = formaDePagamento[parcela_forma_de_pagamento]; // esse cara define o metodo de pagamento padronizados pelo site de acordo com o banco de dados
-        const id_item = items[tipo_item]
-        const financial = account[method]
+        const centroMethod = CentroFormaDePagamento[parcela_forma_de_pagamento];
+        const ptbMethod = PTBformaDePagamento[parcela_forma_de_pagamento]
+
+
+        const id_item = unidade.includes("PTB") || unidade.includes("Golfinho Azul") ? PTBservices[tipo_item] : CentroItems[tipo_item]
+        const financial = unidade.includes("PTB") || unidade.includes("Golfinho Azul") ? PtbAccount[ptbMethod] : CentroAccount[centroMethod]
 
         const salesNotesString = {
             "Valor da Primeira(s) Parcela(s)": valor_da_Primeira_Parcela,
@@ -188,9 +198,9 @@ class RegisterController {
         const saleNotes = JSON.stringify(salesNotesString)
 
         async function senderSale(customer) {
-            const token = await prisma.conec.findMany({ where: { id: 1 } })
+            const token = await prisma.conec.findMany({ where: { id: unidade.includes("PTB") || unidade.includes("Golfinho Azul") ? 2 : 1 } })
             const headers = {
-                "Authorization": `Bearer ${token[0].access_token}`,
+                "Authorization": `Bearer ${token[0]?.access_token}`,
                 "Content-Type": "application/json"
             }
 
@@ -208,22 +218,23 @@ class RegisterController {
                 ],
                 "discount": {
                     "measure_unit": "VALUE",
-                    "rate": desconto_total_Pontualidade
+                    "rate": 0
                 },
                 "payment": {
                     "type": n_parcelas <= 1 ? "CASH" : "TIMES",
-                    "method": method,
+                    "method": unidade.includes("PTB") || unidade.includes("Golfinho Azul") ? ptbMethod : centroMethod,
                     "installments":
                         parcelas
                     ,
                     "financial_account_id": financial
                 },
-                "notes": saleNotes,   //
-                "category_id": "" //
+                "notes": saleNotes,
+                "category_id": ""
             }
 
             await axios.post('https://api.contaazul.com/v1/sales', saleBody, { headers })
                 .then(data => {
+                    console.log(data.data)
                     data ? console.log("A venda foi lançada") : console.log("A venda nao foi lançada")
                 }).catch(error => {
                     if (error) {
