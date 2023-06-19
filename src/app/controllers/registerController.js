@@ -236,6 +236,7 @@ class RegisterController {
             }
             await axios.post('https://api.contaazul.com/v1/sales', courseSale, { headers })
                 .then(data => {
+                    console.log(data)
                     data ? console.log("A venda foi lançada") : console.log("A venda nao foi lançada")
                 }).catch(error => {
                     if (error) {
@@ -315,6 +316,7 @@ class RegisterController {
             await axios.post('https://api.contaazul.com/v1/sales', teachingmaterial,
                 { headers: header })
                 .then(data => {
+                    console.log(data)
                     data ? console.log("O material foi lançado") :
                         console.log("O material nao foi lançado")
                 }).catch(error => {

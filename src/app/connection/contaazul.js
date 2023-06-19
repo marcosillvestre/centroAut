@@ -13,8 +13,8 @@ var job = new CronJob(
 
 
     function () {
-        refreshCentro()
-        refreshPtb()
+        // refreshCentro()
+        // refreshPtb()
     },
     null,
     true,
@@ -25,7 +25,7 @@ var job = new CronJob(
 const kk = async () => {
     await prisma.conec.findMany().then(res => console.log(res))
 }
-// kk()
+kk()
 
 async function refreshCentro() {
     const headers = {
