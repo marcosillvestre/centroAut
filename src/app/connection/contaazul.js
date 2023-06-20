@@ -1,6 +1,5 @@
 const axios = require("axios");
 require('dotenv').config()
-const fs = require('fs');
 
 const encoded = (Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`).toString('base64'));
 
@@ -11,10 +10,9 @@ var CronJob = require('cron').CronJob;
 var job = new CronJob(
     '0 */50 * * * *',
 
-
     function () {
-        // refreshCentro()
-        // refreshPtb()
+        refreshCentro()
+        refreshPtb()
     },
     null,
     true,
@@ -92,5 +90,9 @@ async function refreshPtb() {
 }
 //this 👆👆 part saves on a database the access and refresh_token
 
- //segunda temos que testar essa questao das novas funcionalidades juntamente com o make ( array sendo enviado no lugar do material didatico )
-// esquematizei assim [{ "id": 000, "value": "Touchstone 1 - SB - 5th Ed" }] por ex
+
+async function token() {
+    return await prisma.conec.findMany()
+}
+token().then(res => console.log(res))
+
