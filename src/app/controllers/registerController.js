@@ -13,15 +13,16 @@ const CentroAccount = require('../services/centro/receive_rules')
 const CentroFormaDePagamento = require('../services/centro/payment_terms')
 const PTBformaDePagamento = require('../services/ptb/PTBpayment_terms')
 const PTBservices = require('../services/ptb/PTBservices')
-class WebHookController {
+class RegisterController {
 
     async store(req, res) {
 
         const { data: { id } } = req.body
         const headers = {
             "content-type": "application/json",
-            "Authorization": "Token 07817e95-73e2-4649-91a1-ceb25da45914"
+            "Authorization": `Token ${process.env.AGENDOR_TOKEN}`
         }
+
         const { data: { data } } = await axios.get(`https://api.agendor.com.br/v3/deals/${id}?withCustomFields=true`, { headers })
         const { person } = data
         const { customFields } = data
@@ -197,9 +198,6 @@ class WebHookController {
                 senderTeachingMaterial(customer, token[0]?.access_token)
             }
 
-
-
-
             const mdFromCentro = require('../services/centro/materialDidatico')
             const mdFromPtb = require('../services/ptb/materialDidaticoPtb')
             const products = []
@@ -281,6 +279,6 @@ class WebHookController {
     }
 }
 
-module.exports = new WebHookController()
+module.exports = new RegisterController()
 
 
