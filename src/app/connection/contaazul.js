@@ -11,8 +11,8 @@ var job = new CronJob(
     '0 */50 * * * *',
 
     function () {
-        refreshCentro()
-        refreshPtb()
+        // refreshCentro()
+        // refreshPtb()
     },
     null,
     true,
@@ -86,3 +86,25 @@ async function refreshPtb() {
 }
 //this 👆👆 part saves on a database the access and refresh_token
 
+// async function token() {
+//     let access;
+
+//     await prisma.conec.findMany({ where: { id: 1 } }).then(res => access = res[0].access_token)
+//     console.log(access)
+
+//     // const headers = {
+//     //     'Content-Type': "application/json",
+//     //     'Authorization': `Bearer ${access}`
+//     // }
+
+//     // axios.get("https://api.contaazul.com/v1/products", { headers }).then(res => {
+//     //     res.data.map(res => {
+//     //         return res.name + " : " + res.id
+
+//     //     })
+//     // }
+//     // )
+
+// }
+
+// token()

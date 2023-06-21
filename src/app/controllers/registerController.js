@@ -126,8 +126,11 @@ class RegisterController {
             const centroMethod = CentroFormaDePagamento[parcela_forma_de_pagamento];
             const ptbMethod = PTBformaDePagamento[parcela_forma_de_pagamento]
 
-            const id_item = unidade.value.includes("PTB") || unidade.value.includes("Golfinho Azul") ? PTBservices[data.products[0].nome] : CentroItems[data.products[0].nome]
-            const financial = unidade.value.includes("PTB") || unidade.value.includes("Golfinho Azul") ? PtbAccount[ptbMethod] : CentroAccount[centroMethod]
+            const id_item = unidade.value.includes("PTB") || unidade.value.includes("Golfinho Azul") ?
+                PTBservices[data.products[0].nome] : CentroItems[data.products[0].nome]
+
+            const financial = unidade.value.includes("PTB") || unidade.value.includes("Golfinho Azul") ?
+                PtbAccount[ptbMethod] : CentroAccount[centroMethod]
 
             const salesNotesString = {
                 "Valor da Primeira(s) Parcela(s)": valor_da_primeira_parcela,
@@ -196,6 +199,8 @@ class RegisterController {
                 }
                 ContaAzulSender(courseSale, headers)
                 senderTeachingMaterial(customer, token[0]?.access_token)
+                SenderTax(customer, token[0]?.access_token)
+
             }
 
             const mdFromCentro = require('../services/centro/materialDidatico')
@@ -263,16 +268,67 @@ class RegisterController {
             }
 
 
+            const centroMethodTax = CentroFormaDePagamento[tm_forma_de_pagamento.value];
+            const ptbMethodTax = PTBformaDePagamento[tm_forma_de_pagamento.value]
+
+
+            const taxFinancial = unidade.value.includes("PTB") || unidade.value.includes("Golfinho Azul") ?
+                PtbAccount[ptbMethodTax] : CentroAccount[centroMethodTax]
+
+            const formatedTaxDate = moment(tm_data_de_pagamento, "DD/MM/YYYY").toDate()
+
+            async function SenderTax(customer, token) {
+                const header = {
+                    "Authorization": `Bearer ${token}`,
+                    "Content-Type": "application/json"
+                }
+
+                const taxCell = {
+                    "emission": customer?.created_at,
+                    "status": "PENDING",
+                    "customer_id": customer?.id,
+                    "services": [
+                        {
+                            "description": "Taxa de Matrícula",
+                            "quantity": 1,
+                            "service_id": "682c4202-e0c2-4bab-a847-c8dbe89b80d9",
+                            "value": tm_valor_ex_150_00
+                        }
+                    ],
+                    "payment": {
+                        "type": "TIMES",
+                        "method": unidade.value.includes("PTB") || unidade.value.includes("Golfinho Azul") ?
+                            ptbMethodTax : centroMethodTax,
+                        "installments":
+                            [{
+                                "number": 1,
+                                "value": tm_valor_ex_150_00,
+                                "due_date": formatedTaxDate,
+                                "status": "PENDING",
+                            }]
+                        ,
+                        "financial_account_id": taxFinancial
+                    },
+                    "notes": saleNotes,
+                }
+                ContaAzulSender(taxCell, header)
+            }
+
+
+
+
             async function ContaAzulSender(cell, headers) {
                 await axios.post('https://api.contaazul.com/v1/sales', cell, { headers })
                     .then(data => {
                         data ? console.log("A venda foi lançada") : console.log("A venda nao foi lançada")
                     }).catch(error => {
                         if (error) {
-                            console.log("deu ruim")
+                            console.log(error)
                         }
                     })
             }
+
+
         }
         return res.status(201).json({ message: "Venda lançada com sucesso" })
 
@@ -280,5 +336,4 @@ class RegisterController {
 }
 
 module.exports = new RegisterController()
-
 
