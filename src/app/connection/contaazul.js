@@ -11,8 +11,7 @@ var job = new CronJob(
     '0 */50 * * * *',
 
     function () {
-        refreshCentro()
-        refreshPtb()
+        token()
     },
     null,
     true,
@@ -21,15 +20,21 @@ var job = new CronJob(
 
 //👆👆 this dude makes this 👇👇 function runs every 50min
 
-async function refreshCentro() {
+
+async function token() {
+    await prisma.conec.findMany().then(res => {
+        refreshCentro(res.filter(data => data.id === 1))
+        refreshPtb(res.filter(data => data.id === 2))
+    })
+}
+async function refreshCentro(token) {
     const headers = {
         "Authorization": `Basic ${encoded}`,
         "Content-Type": "application/json"
     }
-    const db = await prisma.conec.findMany({ where: { id: 1 } })
     const body = {
         "grant_type": "refresh_token",
-        "refresh_token": `${db[0]?.refresh_token}`
+        "refresh_token": `${token[0]?.refresh_token}`
     }
 
     try {
@@ -53,15 +58,14 @@ async function refreshCentro() {
     }
 }
 
-async function refreshPtb() {
+async function refreshPtb(token) {
     const headers = {
         "Authorization": `Basic ${encoded}`,
         "Content-Type": "application/json"
     }
-    const db = await prisma.conec.findMany({ where: { id: 2 } })
     const body = {
         "grant_type": "refresh_token",
-        "refresh_token": `${db[0]?.refresh_token}`
+        "refresh_token": `${token[0]?.refresh_token}`
     }
 
     try {
@@ -85,3 +89,4 @@ async function refreshPtb() {
     }
 }
 //this 👆👆 part saves on a database the access and refresh_token
+

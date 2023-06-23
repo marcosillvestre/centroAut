@@ -7,7 +7,7 @@ const receive_rules = {
     "PAYMENT_LINK": "e91cfd12-ba92-4984-97a5-2199dc24dc1b",
     "DIGITAL_WALLET": "",
     "BANKING_DEPOSIT": "feb2af39-163e-432c-ae7c-b587b2d042a7",
-    "CASH": "",
+    "CASH": "53319593-041c-4bb5-933f-934437d3815e",
     "INSTANT_PAYMENT": "feb2af39-163e-432c-ae7c-b587b2d042a7",
     "WITHOUT_PAYMENT": "",
     "BANKING_TRANSFER": "feb2af39-163e-432c-ae7c-b587b2d042a7",

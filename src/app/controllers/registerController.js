@@ -5,14 +5,11 @@ const prisma = new PrismaClient()
 
 const currentDate = new Date();
 
-const CentroItems = require('../services/centro/services')
-
 const PtbAccount = require('../services/ptb/PTBreceive_rules')
 const CentroAccount = require('../services/centro/receive_rules')
 
 const CentroFormaDePagamento = require('../services/centro/payment_terms')
 const PTBformaDePagamento = require('../services/ptb/PTBpayment_terms')
-const PTBservices = require('../services/ptb/PTBservices')
 class RegisterController {
 
     async store(req, res) {
@@ -92,15 +89,16 @@ class RegisterController {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
+
                 await axios.post('https://api.contaazul.com/v1/customers',
                     customerBody, { headers }).then(async res => {
-                        senderSale(res.data)
+                        senderSale(res.data, token)
                     })
                     .catch(async err => {
                         if (err.response.data.message === 'CPF/CPNJ já utilizado por outro cliente.') {
                             await axios.get(`https://api.contaazul.com/v1/customers?document=${cpf}`,
                                 { headers }).then(async data => {
-                                    senderSale(data.data[0])
+                                    senderSale(data.data[0], token)
                                 })
                         }
                     })
@@ -123,11 +121,9 @@ class RegisterController {
             }
 
 
-            const centroMethod = CentroFormaDePagamento[parcela_forma_de_pagamento];
-            const ptbMethod = PTBformaDePagamento[parcela_forma_de_pagamento]
+            const centroMethod = CentroFormaDePagamento[parcela_forma_de_pagamento.value];
+            const ptbMethod = PTBformaDePagamento[parcela_forma_de_pagamento.value]
 
-            const id_item = unidade.value.includes("PTB") || unidade.value.includes("Golfinho Azul") ?
-                PTBservices[data.products[0].nome] : CentroItems[data.products[0].nome]
 
             const financial = unidade.value.includes("PTB") || unidade.value.includes("Golfinho Azul") ?
                 PtbAccount[ptbMethod] : CentroAccount[centroMethod]
@@ -150,6 +146,7 @@ class RegisterController {
                 "TM Valor": tm_valor_ex_150_00,
                 "TM forma de pg": tm_forma_de_pagamento.value,
                 "TM Venc": tm_data_de_pagamento,
+
                 "Carga Horária do Curso": carga_horaria_do_curso,
                 "Unidade": unidade.value,
                 "Descrição": data.description,
@@ -157,49 +154,50 @@ class RegisterController {
             }
             const saleNotes = JSON.stringify(salesNotesString, null, 2)
 
-            async function senderSale(customer) {
-                const token = await prisma.conec.findMany({
-                    where: {
-                        id: unidade.value.includes("PTB") ||
-                            unidade.value.includes("Golfinho Azul") ? 2 : 1
-                    }
-                })
+            async function senderSale(customer, token) {
+                const type = "services"
+
                 const headers = {
-                    "Authorization": `Bearer ${token[0]?.access_token}`,
+                    "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
                 }
 
-                const courseSale = {
-                    "emission": customer?.created_at,
-                    "status": "PENDING",
-                    "customer_id": customer?.id,
-                    "services": [
-                        {
-                            "description": data.products[0].nome,
-                            "quantity": 1,
-                            "service_id": id_item,
-                            "value": data.value
+                await axios.get(`https://api.contaazul.com/v1/${type}`, { headers })
+                    .then(async res => {
+                        const filtered = res.data.filter(res => res.name === data.products[0].nome)
+                        const courseSale = {
+                            "emission": customer?.created_at,
+                            "status": "PENDING",
+                            "customer_id": customer?.id,
+                            "services": [
+                                {
+                                    "description": filtered[0].name,
+                                    "quantity": 1,
+                                    "service_id": filtered[0].id,
+                                    "value": data.value
+                                }
+                            ],
+                            "discount": {
+                                "measure_unit": "VALUE",
+                                "rate": 0
+                            },
+                            "payment": {
+                                "type": n_de_parcelas <= 1 ? "CASH" : "TIMES",
+                                "method": unidade.value.includes("PTB") ||
+                                    unidade.value.includes("Golfinho Azul") ?
+                                    ptbMethod : centroMethod,
+                                "installments":
+                                    parcelas
+                                ,
+                                "financial_account_id": financial
+                            },
+                            "notes": saleNotes,
+                            "category_id": ""
                         }
-                    ],
-                    "discount": {
-                        "measure_unit": "VALUE",
-                        "rate": 0
-                    },
-                    "payment": {
-                        "type": n_de_parcelas <= 1 ? "CASH" : "TIMES",
-                        "method": unidade.value.includes("PTB") ||
-                            unidade.value.includes("Golfinho Azul") ?
-                            ptbMethod : centroMethod,
-                        "installments":
-                            parcelas
-                        ,
-                        "financial_account_id": financial
-                    },
-                    "notes": saleNotes,
-                }
-                ContaAzulSender(courseSale, headers)
-                senderTeachingMaterial(customer, token[0]?.access_token)
-                SenderTax(customer, token[0]?.access_token)
+                        ContaAzulSender(courseSale, headers)
+                        senderTeachingMaterial(customer, token)
+                        SenderTax(customer, token)
+                    })
 
             }
 
@@ -208,8 +206,8 @@ class RegisterController {
             const products = []
 
 
-            const centroMethodMaterial = CentroFormaDePagamento[md_forma_de_pagamento];
-            const ptbMethodMaterial = PTBformaDePagamento[md_forma_de_pagamento]
+            const centroMethodMaterial = CentroFormaDePagamento[md_forma_de_pagamento.value];
+            const ptbMethodMaterial = PTBformaDePagamento[md_forma_de_pagamento.value]
             const priceMaterialCentro = require('../services/centro/teachingMaterialPrice')
             const priceMaterialPtb = require('../services/ptb/teachingMaterialPricePTB')
 
@@ -229,14 +227,15 @@ class RegisterController {
             })
 
 
-
             const financialMaterial = unidade.value.includes("PTB") || unidade.value.includes("Golfinho Azul") ?
                 PtbAccount[ptbMethodMaterial] : CentroAccount[centroMethodMaterial]
-
 
             const formattedDate = moment(md_data_de_pagamento, "DD/MM/YYYY").toDate();
 
             async function senderTeachingMaterial(customer, token) {
+
+                const type = "products"
+
                 const header = {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
@@ -278,6 +277,9 @@ class RegisterController {
             const formatedTaxDate = moment(tm_data_de_pagamento, "DD/MM/YYYY").toDate()
 
             async function SenderTax(customer, token) {
+
+                const type = "services"
+
                 const header = {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json"
@@ -291,7 +293,8 @@ class RegisterController {
                         {
                             "description": "Taxa de Matrícula",
                             "quantity": 1,
-                            "service_id": "682c4202-e0c2-4bab-a847-c8dbe89b80d9",
+                            "service_id": unidade.value.includes("PTB") || unidade.value.includes("Golfinho Azul") ?
+                                "09a1a3f8-f75e-4b25-a2ce-e815514028de" : "682c4202-e0c2-4bab-a847-c8dbe89b80d9",
                             "value": tm_valor_ex_150_00
                         }
                     ],
@@ -316,7 +319,6 @@ class RegisterController {
 
 
 
-
             async function ContaAzulSender(cell, headers) {
                 await axios.post('https://api.contaazul.com/v1/sales', cell, { headers })
                     .then(data => {
@@ -327,8 +329,6 @@ class RegisterController {
                         }
                     })
             }
-
-
         }
         return res.status(201).json({ message: "Venda lançada com sucesso" })
 
