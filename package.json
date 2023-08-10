@@ -27,8 +27,8 @@
         "yup": "^1.1.1"
     },
     "scripts": {
-        "start": "node index.js",
         "dev": "nodemon index.js",
+        "start": "node index.js",
         "postinstall": "prisma generate && prisma migrate deploy"
     },
     "keywords": [],

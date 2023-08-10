@@ -72,6 +72,7 @@ async function refreshPtb(token) {
         await axios.post("https://api.contaazul.com/oauth2/token",
             body, { headers }).then(async data => {
                 console.log(data.data)
+
                 await prisma.conec.update({
                     where: { id: 2 },
                     data: {
@@ -89,4 +90,3 @@ async function refreshPtb(token) {
     }
 }
 //this 👆👆 part saves on a database the access and refresh_token
-
