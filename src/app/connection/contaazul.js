@@ -19,7 +19,10 @@ var job = new CronJob(
 );
 
 //👆👆 this dude makes this 👇👇 function runs every 50min
-
+const headers = {
+    "Authorization": `Basic ${encoded}`,
+    "Content-Type": "application/json"
+}
 
 async function token() {
     await prisma.conec.findMany().then(res => {
@@ -28,10 +31,6 @@ async function token() {
     })
 }
 async function refreshCentro(token) {
-    const headers = {
-        "Authorization": `Basic ${encoded}`,
-        "Content-Type": "application/json"
-    }
     const body = {
         "grant_type": "refresh_token",
         "refresh_token": `${token[0]?.refresh_token}`
@@ -59,10 +58,6 @@ async function refreshCentro(token) {
 }
 
 async function refreshPtb(token) {
-    const headers = {
-        "Authorization": `Basic ${encoded}`,
-        "Content-Type": "application/json"
-    }
     const body = {
         "grant_type": "refresh_token",
         "refresh_token": `${token[0]?.refresh_token}`
@@ -71,8 +66,6 @@ async function refreshPtb(token) {
     try {
         await axios.post("https://api.contaazul.com/oauth2/token",
             body, { headers }).then(async data => {
-                console.log(data.data)
-
                 await prisma.conec.update({
                     where: { id: 2 },
                     data: {
