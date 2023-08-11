@@ -2,6 +2,7 @@ const axios = require('axios')
 const moment = require('moment')
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
+require('dotenv').config()
 
 const currentDate = new Date();
 
@@ -11,6 +12,7 @@ const CentroAccount = require('../services/centro/receive_rules')
 const CentroFormaDePagamento = require('../services/centro/payment_terms')
 const PTBformaDePagamento = require('../services/ptb/PTBpayment_terms')
 
+
 class RegisterController {
     async store(req, res) {
 
@@ -19,7 +21,7 @@ class RegisterController {
             "content-type": "application/json",
         }
 
-        const { data: { deals } } = await axios.get(`https://crm.rdstation.com/api/v1/deals?token=64c1219c7de4220029d55fc7&name=${name}`, { headers })
+        const { data: { deals } } = await axios.get(`https://crm.rdstation.com/api/v1/deals?token=${process.env.RD_TOKEN}&name=${name}`, { headers })
 
 
 
