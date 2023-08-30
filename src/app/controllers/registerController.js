@@ -17,6 +17,7 @@ class RegisterController {
     async store(req, res) {
 
         const { name } = req.body
+
         const headers = {
             "content-type": "application/json",
         }
@@ -62,7 +63,7 @@ class RegisterController {
         const tmValor = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Valor de taxa de matrícula')).map(res => res.value)[0]
         const tmFormaPg = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Forma de pagamento TM')).map(res => res.value)[0]
         const tmVencimento = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Data de pagamento TM')).map(res => res.value)[0]
-
+        const nameResponsible = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes("Nome  do responsável")).map(res => res.value)[0]
 
 
         try {
@@ -88,7 +89,7 @@ class RegisterController {
             const notes = JSON.stringify(objeto, null, 3)
 
             const customerBody = {
-                "name": name,
+                "name": nameResponsible,
                 "email": email,
                 "business_phone": CelularResponsavel,
                 "mobile_phone": CelularResponsavel,

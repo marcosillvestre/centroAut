@@ -13,6 +13,6 @@ routes.get("/", (req, res) => {
     return res.json("Hello World")
 })
 
-
+console.log(new Date())
 
 module.exports = routes
