@@ -221,76 +221,67 @@ class RegisterController {
 
 
                         ContaAzulSender(courseSale)
-                        // senderTeachingMaterial(customer )
+                        senderTeachingMaterial(customer)
                         SenderTax(customer, token)
                     })
 
             }
 
 
-            /////////////////////////////////////////////////////
-            // const mdFromCentro = require('../services/centro/materialDidatico')
-            // const mdFromPtb = require('../services/ptb/materialDidaticoPtb')
-            // let products = []
 
-            // const centroMethodMaterial = CentroFormaDePagamento[mdFormaPg];
-            // const ptbMethodMaterial = PTBformaDePagamento[mdFormaPg]
+            const centroMethodMaterial = CentroFormaDePagamento[mdFormaPg];
+            const ptbMethodMaterial = PTBformaDePagamento[mdFormaPg]
 
-            ////////////////////
-            // let kkk = []
-            // materialDidatico.map(async data => {
-            //     await axios.get(`https://api.contaazul.com/v1/products?name=${data}`, { headers: header[0] })
-            //     // .then(res => console.log(res))
+            const financialMaterial = unidade.includes("PTB") || unidade.includes("Golfinho Azul") ?
+                PtbAccount[ptbMethodMaterial] : CentroAccount[centroMethodMaterial]
 
-            // })
-            // console.log(kkk)
+            const formattedDate = moment(mdVencimento, "DD/MM/YYYY").toDate();
 
-            // const pd = {
-            //     "description": data,
-            //     "quantity": 1,
-            //     "value": value,
+            let products = []
 
-            //     "product_id": id,
-            // }
-            // products.push(pd)
+            async function senderTeachingMaterial(customer) {
+                materialDidatico.map(async data => {
 
+                    await axios.get(`https://api.contaazul.com/v1/products?name=${data}`, { headers: header[0] })
+                        .then(res => {
 
+                            const pd = {
+                                "description": res.data[0].name,
+                                "quantity": 1,
+                                "value": res.data[0].value,
 
+                                "product_id": res.data[0].id,
+                            }
+                            return products.push(pd)
 
-            ///////////
-            // const financialMaterial = unidade.includes("PTB") || unidade.includes("Golfinho Azul") ?
-            //     PtbAccount[ptbMethodMaterial] : CentroAccount[centroMethodMaterial]
-
-            // const formattedDate = moment(mdVencimento, "DD/MM/YYYY").toDate();
-
-            // async function senderTeachingMaterial(customer) {
-
-            //     const teachingmaterial = {
-            //         "emission": customer?.created_at,
-            //         "status": "PENDING",
-            //         "customer_id": customer?.id,
-            //         "products": products,
-            //         "payment": {
-            //             "type": "TIMES",
-            //             "method": unidade.includes("PTB") || unidade.includes("Golfinho Azul") ?
-            //                 ptbMethodMaterial : centroMethodMaterial,
-            //             "installments":
-            //                 [{
-            //                     "number": 1,
-            //                     "value": mdValor,
-            //                     "due_date": formattedDate,
-            //                     "status": "PENDING",
-            //                 }]
-            //             ,
-            //             "financial_account_id": financialMaterial
-            //         },
-            //         "notes": saleNotes,
-            //         "category_id": ""
-            //     }
-            //     // ContaAzulSender(teachingmaterial, header)
-            // }
-            ////////////////////////////////////////////////////
-
+                        })
+                    if (products.length === materialDidatico.length) {
+                        const teachingmaterial = {
+                            "emission": customer?.created_at,
+                            "status": "PENDING",
+                            "customer_id": customer?.id,
+                            "products": products,
+                            "payment": {
+                                "type": "TIMES",
+                                "method": unidade.includes("PTB") || unidade.includes("Golfinho Azul") ?
+                                    ptbMethodMaterial : centroMethodMaterial,
+                                "installments":
+                                    [{
+                                        "number": 1,
+                                        "value": mdValor,
+                                        "due_date": formattedDate,
+                                        "status": "PENDING",
+                                    }]
+                                ,
+                                "financial_account_id": financialMaterial
+                            },
+                            "notes": saleNotes,
+                            "category_id": ""
+                        }
+                        ContaAzulSender(teachingmaterial)
+                    }
+                })
+            }
 
 
 
@@ -307,7 +298,6 @@ class RegisterController {
             const formatedTaxDate = moment(tmVencimento, "DD/MM/YYYY").toDate()
 
             async function SenderTax(customer) {
-
 
                 const taxCell = {
                     "emission": customer?.created_at,
@@ -346,11 +336,7 @@ class RegisterController {
             async function ContaAzulSender(cell) {
                 await axios.post('https://api.contaazul.com/v1/sales', cell, { headers: header[0] })
                     .then(data => {
-                        data ? console.log("A venda foi lançada") : console.log("A venda nao foi lançada")
-                    }).catch(error => {
-                        if (error) {
-                            console.log(error)
-                        }
+                        data && console.log("A venda foi lançada")
                     })
             }
 
@@ -358,7 +344,7 @@ class RegisterController {
 
         } catch (error) {
             if (error) {
-
+                console.log(error)
                 return res.status(401).json({ message: "Something went wrong" })
             }
         }
