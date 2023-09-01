@@ -18,6 +18,9 @@ class RegisterController {
 
         const { name } = req.body
 
+
+        console.log(name)
+
         const headers = {
             "content-type": "application/json",
         }
@@ -117,9 +120,7 @@ class RegisterController {
 
             senderCustomer(header[0])
 
-
             async function senderCustomer(header) {
-
                 await axios.post('https://api.contaazul.com/v1/customers',
                     customerBody, { headers: header }).then(async res => {
                         senderSale(res.data)
@@ -187,7 +188,7 @@ class RegisterController {
             async function senderSale(customer) {
                 await axios.get(`https://api.contaazul.com/v1/services`, { headers: header[0] })
                     .then(async res => {
-                        const filtered = res.data.filter(res => res.name === deals[0].deal_products[0].name)
+                        const filtered = res.data?.filter(res => res.name === deals[0].deal_products[0].name)
 
                         const courseSale = {
                             "emission": customer?.created_at,
@@ -195,10 +196,10 @@ class RegisterController {
                             "customer_id": customer?.id,
                             "services": [
                                 {
-                                    "description": filtered[0].name,
+                                    "description": filtered[0]?.name,
                                     "quantity": 1,
-                                    "service_id": filtered[0].id,
-                                    "value": valorCurso
+                                    "service_id": filtered[0]?.id,
+                                    "value": parseFloat(valorCurso)
                                 }
                             ],
                             "discount": {
@@ -240,17 +241,18 @@ class RegisterController {
             let products = []
 
             async function senderTeachingMaterial(customer) {
+
                 materialDidatico.map(async data => {
 
                     await axios.get(`https://api.contaazul.com/v1/products?name=${data}`, { headers: header[0] })
                         .then(res => {
-
                             const pd = {
-                                "description": res.data[0].name,
+                                "description": res.data[0]?.name,
                                 "quantity": 1,
-                                "value": res.data[0].value,
+                                "value": res.data[0]?.value,
 
-                                "product_id": res.data[0].id,
+
+                                "product_id": res.data[0]?.id,
                             }
                             return products.push(pd)
 
@@ -268,7 +270,7 @@ class RegisterController {
                                 "installments":
                                     [{
                                         "number": 1,
-                                        "value": mdValor,
+                                        "value": parseFloat(mdValor),
                                         "due_date": formattedDate,
                                         "status": "PENDING",
                                     }]
@@ -309,7 +311,7 @@ class RegisterController {
                             "quantity": 1,
                             "service_id": unidade.includes("PTB") || unidade.includes("Golfinho Azul") ?
                                 "09a1a3f8-f75e-4b25-a2ce-e815514028de" : "682c4202-e0c2-4bab-a847-c8dbe89b80d9",
-                            "value": tmValor
+                            "value": parseFloat(tmValor)
                         }
                     ],
                     "payment": {
@@ -319,7 +321,7 @@ class RegisterController {
                         "installments":
                             [{
                                 "number": 1,
-                                "value": tmValor,
+                                "value": parseFloat(tmValor),
                                 "due_date": formatedTaxDate,
                                 "status": "PENDING",
                             }]
@@ -336,11 +338,19 @@ class RegisterController {
             async function ContaAzulSender(cell) {
                 await axios.post('https://api.contaazul.com/v1/sales', cell, { headers: header[0] })
                     .then(data => {
-                        data && console.log("A venda foi lançada")
+                        if (data) {
+                            console.log("A venda foi lançada")
+                            return res.status(201).json({ message: "A venda foi lançada" })
+                        }
+                    }).catch((err) => {
+                        if (err) {
+                            console.log(err)
+
+                        }
+
                     })
             }
 
-            return res.status(201).json({ message: "Success" })
 
         } catch (error) {
             if (error) {
