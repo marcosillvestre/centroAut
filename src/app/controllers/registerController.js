@@ -28,7 +28,6 @@ class RegisterController {
         const { data: { deals } } = await axios.get(`https://crm.rdstation.com/api/v1/deals?token=${process.env.RD_TOKEN}&name=${name}`, { headers })
 
 
-
         const contrato = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Nº do contrato')).map(res => res.value)[0]
         const unidade = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Unidade')).map(res => res.value)[0]
         const rg = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('RG responsável')).map(res => res.value)[0]
@@ -43,18 +42,12 @@ class RegisterController {
         const profissao = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Profissão')).map(res => res.value)[0]
         const email = deals[0].contacts[0]?.emails[0]?.email
         const cargaHoraria = `${deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Carga horário do curso')).map(res => res.value)}`
-        const paDATA = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Data da primeira aula')).map(res => res.value)[0]
         const numeroParcelas = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Número de parcelas')).map(res => res.value)[0]
         const descontoTotal = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Desconto total')).map(res => res.value)[0]
         const descontoPorParcela = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Valor do desconto de pontualidade por parcela')).map(res => res.value)[0]
         const valorParcela = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Valor total da parcela')).map(res => res.value)[0]
         const curso = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Curso')).map(res => res.value)[0]
         const valorCurso = deals[0].deal_products[0]?.total
-        const background = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Background')).map(res => res.value)[0]
-        const diaAula = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Dia de aula')).map(res => res.value)[0]
-        const professor = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Professor')).map(res => res.value)
-        const horarioFim = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Horário de fim')).map(res => res.value)[0]
-        const horarioInicio = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Horário de Inicio')).map(res => res.value)[0]
         const ppFormaPg = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Forma de pagamento da parcela')).map(res => res.value)[0]
         const ppVencimento = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Data de vencimento da primeira parcela')).map(res => res.value)[0]
         const dataUltimaP = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Data de vencimento da última parcela')).map(res => res.value)[0]
@@ -79,17 +72,6 @@ class RegisterController {
                 "Content-Type": "application/json"
             })
 
-            const objeto = {
-                contrato,
-                background,
-                paDATA,
-                diaAula,
-                professor,
-                horarioInicio,
-                horarioFim
-            }
-
-            const notes = JSON.stringify(objeto, null, 3)
 
             const customerBody = {
                 "name": nameResponsible,
@@ -100,7 +82,7 @@ class RegisterController {
                 "document": cpf,
                 "identity_document": rg, //
                 "date_of_birth": new Date(DatadeNascdoResp.split("/").reverse().join("-")),
-                "notes": notes,
+                "notes": contrato,
                 "contacts": [
                     {
                         "name": name,
@@ -131,7 +113,11 @@ class RegisterController {
                                 { headers: header }).then(async data => {
                                     senderSale(data.data[0])
                                 })
+                        } else {
+                            console.log(err)
                         }
+
+
                     })
             }
 
@@ -222,8 +208,9 @@ class RegisterController {
 
 
                         ContaAzulSender(courseSale)
-                        senderTeachingMaterial(customer)
-                        SenderTax(customer, token)
+
+                        parseFloat(tmValor) > 1 && SenderTax(customer, token)
+                        parseFloat(mdValor) > 1 && senderTeachingMaterial(customer)
                     })
 
             }
@@ -300,7 +287,6 @@ class RegisterController {
             const formatedTaxDate = moment(tmVencimento, "DD/MM/YYYY").toDate()
 
             async function SenderTax(customer) {
-
                 const taxCell = {
                     "emission": customer?.created_at,
                     "status": "PENDING",
@@ -338,14 +324,13 @@ class RegisterController {
             async function ContaAzulSender(cell) {
                 await axios.post('https://api.contaazul.com/v1/sales', cell, { headers: header[0] })
                     .then(data => {
-                        if (data) {
+                        if (data.status === 201 || data.status === 200) {
                             console.log("A venda foi lançada")
                             return res.status(201).json({ message: "A venda foi lançada" })
                         }
                     }).catch((err) => {
                         if (err) {
-                            console.log(err)
-
+                            console.log(0)
                         }
 
                     })
