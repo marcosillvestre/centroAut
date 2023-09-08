@@ -93,7 +93,6 @@ class RegisterController {
                     }
                 ],
                 "address": {
-                    "zip_code": cep,
                     "street": EnderecoResponsavel,
                     "number": NumeroEnderecoResponsavel,
                     "complement": complemento,
