@@ -86,7 +86,7 @@ class RegisterController {
                 "notes": contrato,
                 "contacts": [
                     {
-                        "name": name.split("-"),
+                        "name": name.split("-")[0],
                         "business_phone": CelularResponsavel,
                         "email": email,
                         "job_title": profissao
