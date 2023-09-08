@@ -66,6 +66,7 @@ class RegisterController {
             var header = []
 
             const token = await prisma.conec.findMany({ where: { id: unidade.includes("PTB") || unidade.includes("Golfinho Azul") ? 2 : 1 } })
+            console.log(unidade)
 
             header.push({
                 "Authorization": `Bearer ${token[0]?.access_token}`,
@@ -85,7 +86,7 @@ class RegisterController {
                 "notes": contrato,
                 "contacts": [
                     {
-                        "name": name,
+                        "name": name.split("-"),
                         "business_phone": CelularResponsavel,
                         "email": email,
                         "job_title": profissao
