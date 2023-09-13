@@ -104,8 +104,8 @@ class RegisterController {
 
             async function senderCustomer(header) {
                 await axios.post('https://api.contaazul.com/v1/customers',
-                    customerBody, { headers: header }).then(async res => {
-                        senderSale(res.data)
+                    customerBody, { headers: header }).then(async info => {
+                        senderSale(info.data)
                     })
                     .catch(async err => {
                         if (err.response.data.message === 'CPF/CPNJ já utilizado por outro cliente.') {
@@ -114,10 +114,8 @@ class RegisterController {
                                     senderSale(data.data[0])
                                 })
                         } else {
-                            console.log(err)
+                            return res.status(401).json({ message: err.response.data })
                         }
-
-
                     })
             }
 
@@ -326,11 +324,11 @@ class RegisterController {
                     .then(data => {
                         if (data.status === 201 || data.status === 200) {
                             console.log("A venda foi lançada")
-                            return res.status(201).json({ message: "A venda foi lançada" })
+                            return res.status(201).json({ data: data.data.id })
                         }
                     }).catch((err) => {
                         if (err) {
-                            console.log(0)
+                            return res.status(401).json({ message: err.data })
                         }
 
                     })
