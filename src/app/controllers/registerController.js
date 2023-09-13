@@ -167,6 +167,7 @@ class RegisterController {
                 "Unidade": unidade,
                 "Curso": curso
             }
+
             const saleNotes = JSON.stringify(salesNotesString, null, 2)
 
             async function senderSale(customer) {
