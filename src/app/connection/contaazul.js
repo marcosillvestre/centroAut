@@ -23,12 +23,14 @@ const headers = {
     "Authorization": `Basic ${encoded}`,
     "Content-Type": "application/json"
 }
+
 async function token() {
     await prisma.conec.findMany().then(res => {
         refreshCentro(res.filter(data => data.id === 1))
         refreshPtb(res.filter(data => data.id === 2))
     })
 }
+
 async function refreshCentro(token) {
     const body = {
         "grant_type": "refresh_token",
@@ -44,13 +46,12 @@ async function refreshCentro(token) {
                         access_token: data?.data.access_token,
                         refresh_token: data?.data.refresh_token
                     }
-                }
-                )
+                })
             })
 
     } catch (error) {
         if (error) {
-            console.log("error")
+            console.log(1)
         }
     }
 }
@@ -70,22 +71,19 @@ async function refreshPtb(token) {
                         access_token: data?.data.access_token,
                         refresh_token: data?.data.refresh_token
                     }
-                }
-                )
+                })
             })
 
     } catch (error) {
         if (error) {
-            console.log("error")
+            console.log(2)
         }
     }
 }
 //this 👆👆 part saves on a database the access and refresh_token
 
 
-
-
-// [{ "id": "875d183f-9c9c-4dfe-ab80-f71fe76d7ade", "name": "Ativo Imobilizado" },
+// [{ "id": "875d183f-9c9c-4dfe-ab80-f71fe76d7ade","name": "Ativo Imobilizado" },
 // { "id": "5898f1c6-bc24-4766-8644-9ec760a09a10", "name": "Categoria padrão" },
 // { "id": "69743879-17b6-4883-9591-f12aa54b852e", "name": "Embalagem" },
 // { "id": "2f65de25-0636-49fc-a698-9dbc77ba2128", "name": "Material de Uso e Consumo" },
