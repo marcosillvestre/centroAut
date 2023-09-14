@@ -171,9 +171,11 @@ class RegisterController {
             const saleNotes = JSON.stringify(salesNotesString, null, 2)
 
             async function senderSale(customer) {
+
                 await axios.get(`https://api.contaazul.com/v1/services`, { headers: header[0] })
                     .then(async res => {
                         const filtered = res.data?.filter(res => res.name === deals[0].deal_products[0].name)
+                        console.log(filtered)
 
                         const courseSale = {
                             "emission": customer?.created_at,
@@ -227,6 +229,7 @@ class RegisterController {
             let products = []
 
             async function senderTeachingMaterial(customer) {
+
 
                 materialDidatico.map(async data => {
 
@@ -323,13 +326,15 @@ class RegisterController {
             async function ContaAzulSender(cell) {
                 await axios.post('https://api.contaazul.com/v1/sales', cell, { headers: header[0] })
                     .then(data => {
+                        console.log(data)
                         if (data.status === 201 || data.status === 200) {
                             console.log("A venda foi lançada")
-                            return res.status(201).json({ data: data.data.id })
+                            // return res.status(201).json({ data: data.data.id })
                         }
                     }).catch((err) => {
                         if (err) {
-                            return res.status(401).json({ message: err.data })
+                            console.log(err)
+                            // return res.status(401).json({ message: err.data })
                         }
 
                     })
