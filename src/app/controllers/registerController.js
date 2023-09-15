@@ -207,7 +207,6 @@ class RegisterController {
                             "category_id": ""
                         }
 
-
                         ContaAzulSender(courseSale)
 
                         parseFloat(tmValor) > 1 && SenderTax(customer)
