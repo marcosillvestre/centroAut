@@ -11,7 +11,7 @@ var job = new CronJob(
     '0 */50 * * * *',
 
     function () {
-        token()
+        // token()
     },
     null,
     true,
