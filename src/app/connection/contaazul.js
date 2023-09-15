@@ -11,7 +11,7 @@ var job = new CronJob(
     '0 */50 * * * *',
 
     function () {
-        // token()
+        token()
     },
     null,
     true,
@@ -50,9 +50,6 @@ async function refreshCentro(token) {
             })
 
     } catch (error) {
-        if (error) {
-            console.log(1)
-        }
     }
 }
 
@@ -75,9 +72,6 @@ async function refreshPtb(token) {
             })
 
     } catch (error) {
-        if (error) {
-            console.log(2)
-        }
     }
 }
 //this 👆👆 part saves on a database the access and refresh_token
