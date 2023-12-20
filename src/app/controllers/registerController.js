@@ -66,7 +66,6 @@ class RegisterController {
             var header = []
 
             const token = await prisma.conec.findMany({ where: { id: unidade.includes("PTB") || unidade.includes("Golfinho Azul") ? 2 : 1 } })
-            console.log(unidade)
 
             header.push({
                 "Authorization": `Bearer ${token[0]?.access_token}`,
@@ -142,8 +141,8 @@ class RegisterController {
 
 
 
-            const financial = unidade.includes("PTB") || unidade.includes("Golfinho Azul") ?
-                PtbAccount[ptbMethod] : CentroAccount[centroMethod]
+            // const financial = unidade.includes("PTB") || unidade.includes("Golfinho Azul") ?
+            //     PtbAccount[ptbMethod] : CentroAccount[centroMethod]
 
 
             const salesNotesString = {
@@ -177,10 +176,58 @@ class RegisterController {
                     .then(async res => {
                         const filtered = res.data?.filter(res => res.name === deals[0].deal_products[0].name)
 
-                        const courseSale = {
+                        // const courseSale = {
+                        //     "emission": customer?.created_at,
+                        //     "status": "PENDING",
+                        //     "customer_id": customer?.id,
+                        //     "services": [
+                        //         {
+                        //             "description": filtered[0]?.name,
+                        //             "quantity": 1,
+                        //             "service_id": filtered[0]?.id,
+                        //             "value": parseFloat(valorCurso)
+                        //         }
+                        //     ],
+                        //     "discount": {
+                        //         "measure_unit": "VALUE",
+                        //         "rate": 0
+                        //     },
+                        //     "payment": {
+                        //         "type": numeroParcelas <= 1 ? "CASH" : "TIMES",
+                        //         "method": unidade.includes("PTB") ||
+                        //             unidade.includes("Golfinho Azul") ?
+                        //             ptbMethod : centroMethod,
+                        //         "installments":
+                        //             parcelas
+                        //         ,
+                        //         "financial_account_id": financial
+                        //     },
+                        //     "notes": saleNotes,
+                        //     "category_id": ""
+                        // }
+
+                        let products = []
+                        materialDidatico.map(async data => {
+                            await axios.get(`https://api.contaazul.com/v1/products?name=${data}`, { headers: header[0] })
+                                .then(res => {
+                                    const pd = {
+                                        "description": res.data[0]?.name,
+                                        "quantity": 1,
+                                        "value": res.data[0]?.value,
+
+
+                                        "product_id": res.data[0]?.id,
+                                    }
+                                    return products.push(pd)
+
+                                })
+                        })
+
+                        const body = {
                             "emission": customer?.created_at,
-                            "status": "PENDING",
+                            "status": "COMMITTED",
                             "customer_id": customer?.id,
+                            "products": products,
                             "services": [
                                 {
                                     "description": filtered[0]?.name,
@@ -193,21 +240,13 @@ class RegisterController {
                                 "measure_unit": "VALUE",
                                 "rate": 0
                             },
-                            "payment": {
-                                "type": numeroParcelas <= 1 ? "CASH" : "TIMES",
-                                "method": unidade.includes("PTB") ||
-                                    unidade.includes("Golfinho Azul") ?
-                                    ptbMethod : centroMethod,
-                                "installments":
-                                    parcelas
-                                ,
-                                "financial_account_id": financial
-                            },
+                            "due_day": parseInt(ppVencimento.split("/")[0]),
+                            "duration": parseInt(numeroParcelas),
                             "notes": saleNotes,
-                            "category_id": ""
+                            "shipping_cost": 0
                         }
 
-                        ContaAzulSender(courseSale)
+                        ContaAzulSenderContract(body)
 
                         parseFloat(tmValor) > 1 && SenderTax(customer)
                         parseFloat(mdValor) > 1 && senderTeachingMaterial(customer)
@@ -225,8 +264,8 @@ class RegisterController {
 
             const formattedDate = moment(mdVencimento, "DD/MM/YYYY").toDate();
 
-            let products = []
 
+            let products = []
             async function senderTeachingMaterial(customer) {
 
                 materialDidatico.map(async data => {
@@ -273,9 +312,6 @@ class RegisterController {
                     }
                 })
             }
-
-
-
 
 
 
@@ -336,6 +372,19 @@ class RegisterController {
                     })
             }
 
+            async function ContaAzulSenderContract(cell) {
+                await axios.post('https://api.contaazul.com/v1/contracts', cell, { headers: header[0] })
+                    .then(data => {
+                        if (data.status === 201 || data.status === 200) {
+                            console.log("A venda foi lançada")
+                        }
+                    }).catch((err) => {
+                        if (err) {
+                            return res.status(401).json({ message: "error" })
+                        }
+                    })
+            }
+
             return res.status(201).json({ data: "A venda foi lançada" })
 
         } catch (error) {
@@ -346,6 +395,7 @@ class RegisterController {
         }
 
     }
+
 }
 
 module.exports = new RegisterController()

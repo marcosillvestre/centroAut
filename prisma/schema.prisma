@@ -17,8 +17,82 @@ model conec {
   refresh_token   String
 }
 
-model index {
-  id              Int         @id @default(autoincrement())
-  access_token    String 
-  refresh_token   String
+model login {
+  id       Int      @id @default(autoincrement())
+  name     String
+  email    String   @unique
+  password String
+  admin    Boolean  @default(false)
+  role     String
+  unity    String[]
+}
+
+model person {
+  name                String
+  owner               String
+  aluno               String
+  unidade             String
+  contrato            String   @id
+  background          String
+  classe              String
+  subclasse           String
+  tmStatus            String
+  tmVencimento        String
+  tmValor             String
+  ppVencimento        String
+  ppStatus            String
+  mdValor             String
+  mdStatus            String
+  acFormato           String
+  tipoMatricula       String
+  tipoComissao        String
+  comissaoValor       String
+  aprovacaoADM        String
+  responsavelADM      String
+  aprovacaoDirecao    String
+  diretorResponsavel  String
+  paDATA              String
+  inicioContrato      String
+  fimContrato         String
+  tel                 String
+  email               String
+  Valor               Float
+  id                  Int
+  paStatus            String
+  situMatric          String
+  acStatus            String
+  alunoNascimento     String
+  cargaHoraria        String
+  contratoStatus      String
+  dataComissionamento String
+  dataMatricula       String
+  dataValidacao       String
+  formatoAula         String
+  horarioFim          String
+  horarioInicio       String
+  idadeAluno          String
+  materialDidatico    String[]
+  mdData              String
+  mdDesconto          String
+  mdFormaPg           String
+  mdParcelas          String
+  mdVencimento        String
+  nivelamento         String
+  observacao          String
+  ppData              String
+  ppDesconto          String
+  ppFormaPg           String
+  ppParcelas          String
+  ppValor             String
+  tempoContrato       String
+  tipoModalidade      String
+  tmData              String
+  tmDesconto          String
+  tmFormaPg           String
+  tmParcelas          String
+  dataAC              Json[]
+  diaAula             String[]
+  comissaoStatus      String
+  professor           String[]
+  curso               String 
 }
