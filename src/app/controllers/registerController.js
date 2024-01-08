@@ -28,6 +28,7 @@ class RegisterController {
         const { data: { deals } } = await axios.get(`https://crm.rdstation.com/api/v1/deals?token=${process.env.RD_TOKEN}&name=${name}`, { headers })
 
 
+        const emissaoVenda = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Data de emissão da venda')).map(res => res.value)[0]
         const contrato = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Nº do contrato')).map(res => res.value)[0]
         const unidade = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Unidade')).map(res => res.value)[0]
         const rg = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('RG responsável')).map(res => res.value)[0]
@@ -38,14 +39,14 @@ class RegisterController {
         const NumeroEnderecoResponsavel = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Número')).map(res => res.value)[0]
         const complemento = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Complemento')).map(res => res.value)[0]
         const bairro = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Bairro')).map(res => res.value)[0]
-        const cep = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('CEP')).map(res => res.value)[0]
+        // const cep = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('CEP')).map(res => res.value)[0]
         const profissao = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Profissão')).map(res => res.value)[0]
         const email = deals[0].contacts[0]?.emails[0]?.email
         const cargaHoraria = `${deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Carga horário do curso')).map(res => res.value)}`
         const numeroParcelas = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Número de parcelas')).map(res => res.value)[0]
         const descontoTotal = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Desconto total')).map(res => res.value)[0]
         const descontoPorParcela = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Valor do desconto de pontualidade por parcela')).map(res => res.value)[0]
-        const valorParcela = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Valor total da parcela')).map(res => res.value)[0]
+        // const valorParcela = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Valor total da parcela')).map(res => res.value)[0]
         const curso = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Curso')).map(res => res.value)[0]
         const valorCurso = deals[0].deal_products[0]?.total
         const ppFormaPg = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Forma de pagamento da parcela')).map(res => res.value)[0]
@@ -60,7 +61,6 @@ class RegisterController {
         const tmFormaPg = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Forma de pagamento TM')).map(res => res.value)[0]
         const tmVencimento = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes('Data de pagamento TM')).map(res => res.value)[0]
         const nameResponsible = deals[0].deal_custom_fields.filter(res => res.custom_field.label.includes("Nome  do responsável")).map(res => res.value)[0]
-
 
         try {
             var header = []
@@ -146,6 +146,7 @@ class RegisterController {
 
 
             const salesNotesString = {
+                "Valor total": parseFloat(valorCurso),
                 "Valor da Parcela": month_value,
                 "PP Forma PG": ppFormaPg,
                 "Parcela dia de vencimento": ppVencimento.split("/")[0],
@@ -222,9 +223,12 @@ class RegisterController {
 
                                 })
                         })
+                        let discount = parseFloat(valorCurso) - parseFloat(descontoTotal)
+                        let value = discount / parseInt(numeroParcelas)
+
 
                         const body = {
-                            "emission": customer?.created_at,
+                            "emission": new Date(emissaoVenda),
                             "status": "COMMITTED",
                             "customer_id": customer?.id,
                             "products": products,
@@ -233,19 +237,18 @@ class RegisterController {
                                     "description": filtered[0]?.name,
                                     "quantity": 1,
                                     "service_id": filtered[0]?.id,
-                                    "value": parseFloat(valorCurso)
+                                    "value": value.toFixed(2)
                                 }
                             ],
                             "discount": {
                                 "measure_unit": "VALUE",
-                                "rate": 0
+                                "rate": descontoPorParcela ? descontoPorParcela : 0
                             },
                             "due_day": parseInt(ppVencimento.split("/")[0]),
                             "duration": parseInt(numeroParcelas),
                             "notes": saleNotes,
                             "shipping_cost": 0
                         }
-
                         ContaAzulSenderContract(body)
 
                         parseFloat(tmValor) > 1 && SenderTax(customer)
@@ -367,6 +370,7 @@ class RegisterController {
                         }
                     }).catch((err) => {
                         if (err) {
+                            console.log('first')
                             return res.status(401).json({ message: "error" })
                         }
                     })
